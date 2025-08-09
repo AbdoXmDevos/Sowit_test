@@ -1,5 +1,7 @@
 # SowitTechTest - Interactive Map Area Manager
 
+- [Click this link for demo](https://streamable.com/z520tb)
+
 A modern Android application for creating, managing, and visualizing geographical areas on an interactive map with place search functionality.
 
 ## 🚀 Features
