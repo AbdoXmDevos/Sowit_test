@@ -16,7 +16,7 @@
 
 ## What is this project?
 
-This project is a modern Android app that makes geographical area management intuitive and powerful. Whether you're planning routes, marking territories, or organizing locations, MapZone provides the tools you need with a beautiful, user-friendly interface.
+This project is a modern Android app that makes geographical area management intuitive and powerful. Whether you're planning routes, marking territories, or organizing locations, it provides the tools you need with a beautiful, user-friendly interface.
 
 ## Getting Started
 
