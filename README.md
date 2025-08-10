@@ -49,8 +49,8 @@ Before you can run the project, you'll need to obtain a Google Maps API key:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/mapzone.git
-   cd sowit_test
+   git clone https://github.com/AbdoXmDevos/Sowit_test
+   cd Sowit_test
    ```
 
 2. **Add your Google Maps API key**
