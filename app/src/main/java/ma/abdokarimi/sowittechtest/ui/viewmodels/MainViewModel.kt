@@ -25,10 +25,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val areaDao = db.areaDao()
 
-    private val placesSearchUtils = PlacesSearchUtils(
-        app,
-        "AIzaSyA-njYF7cbffSFJ2199ZOL_nGZGP3tDHvc"
-    )
+    private val placesSearchUtils = PlacesSearchUtils(app)
 
     val areas = areaDao.getAllAreas()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())

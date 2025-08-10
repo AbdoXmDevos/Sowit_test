@@ -40,7 +40,6 @@ fun SearchTopBar(
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Search Icon
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Rechercher",
@@ -48,7 +47,6 @@ fun SearchTopBar(
                 modifier = Modifier.padding(start = 8.dp, end = 12.dp).alpha(0.5f)
             )
 
-            // Search Text Field
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
@@ -74,7 +72,6 @@ fun SearchTopBar(
                 )
             )
 
-            // Search Button (only show when text is entered)
             if (searchQuery.isNotEmpty()) {
                 IconButton(
                     onClick = onSearchClick,
@@ -89,7 +86,6 @@ fun SearchTopBar(
                 }
             }
 
-            // Clear Button (only show when text is entered)
             if (searchQuery.isNotEmpty()) {
                 IconButton(
                     onClick = onClearClick,

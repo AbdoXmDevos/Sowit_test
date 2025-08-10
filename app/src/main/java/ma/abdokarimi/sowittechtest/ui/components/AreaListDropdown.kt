@@ -12,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ma.abdokarimi.sowittechtest.entity.Area
 
-// Dropdown menu for selecting and managing areas
 @Composable
 fun AreaListDropdown(
     areas: List<Area>,
@@ -33,7 +32,6 @@ fun AreaListDropdown(
             )
         }
 
-        // Dropdown menu for areas
         DropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { onExpandedChange(false) }

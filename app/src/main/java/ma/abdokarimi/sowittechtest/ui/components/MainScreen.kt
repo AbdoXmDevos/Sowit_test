@@ -18,7 +18,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.*
 import ma.abdokarimi.sowittechtest.R
-import ma.abdokarimi.sowittechtest.mvvm.MainViewModel
+import ma.abdokarimi.sowittechtest.ui.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +36,6 @@ fun MainScreen(viewModel: MainViewModel) {
     val showInstructionToast by viewModel.showInstructionToast.collectAsState()
     val hasShownInstructionBefore by viewModel.hasShownInstructionBefore.collectAsState()
 
-    // Show instruction toast only the first time creation mode is entered
     LaunchedEffect(isPolygonMode) {
         if (isPolygonMode && !hasShownInstructionBefore) {
             viewModel.setShowInstructionToast(true)
@@ -47,18 +46,16 @@ fun MainScreen(viewModel: MainViewModel) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Top Bar
         TopAppBar(
             title = {
                 Icon(
                     painter = painterResource(id = R.drawable.sowit_icon),
                     contentDescription = "Logo Sowit",
                     modifier = Modifier.height(30.dp),
-                    tint = Color.Unspecified // Prevents automatic tinting
+                    tint = Color.Unspecified
                 )
             },
             actions = {
-                // Cancel button (only show when in polygon mode)
                 if (isPolygonMode) {
                     IconButton(
                         onClick = {
@@ -73,7 +70,6 @@ fun MainScreen(viewModel: MainViewModel) {
                     }
                 }
 
-                // Save/Add button
                 IconButton(
                     onClick = {
                         if (isPolygonMode) {
@@ -91,7 +87,6 @@ fun MainScreen(viewModel: MainViewModel) {
                     )
                 }
 
-                // List button (only show when not in polygon mode)
                 if (!isPolygonMode) {
                     AreaListDropdown(
                         areas = areas,
@@ -112,7 +107,6 @@ fun MainScreen(viewModel: MainViewModel) {
             }
         )
 
-        // Map Content with floating search bar
         MapWithPlaces(
             viewModel = viewModel,
             isPolygonMode = isPolygonMode,
@@ -124,7 +118,6 @@ fun MainScreen(viewModel: MainViewModel) {
         )
     }
 
-    // Save area dialog
     SaveAreaDialog(
         isVisible = showSaveDialog,
         areaName = areaName,
@@ -142,7 +135,6 @@ fun MainScreen(viewModel: MainViewModel) {
         }
     )
 
-    // Delete confirmation dialog
     DeleteAreaDialog(
         isVisible = showDeleteDialog,
         areaToDelete = areaToDelete,
@@ -158,4 +150,164 @@ fun MainScreen(viewModel: MainViewModel) {
             viewModel.setAreaToDelete(null)
         }
     )
+}
+
+@Composable
+fun MapWithPlaces(
+    viewModel: MainViewModel,
+    isPolygonMode: Boolean = false,
+    selectedArea: ma.abdokarimi.sowittechtest.entity.Area? = null,
+    searchQuery: String = "",
+    onSearchQueryChange: (String) -> Unit = {},
+    showInstructionToast: Boolean = false,
+    onDismissToast: () -> Unit = {}
+) {
+
+    val casablancaPosition = LatLng(33.5731, -7.5898)
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(casablancaPosition, 12f)
+    }
+    val polygonPoints by viewModel.polygonPoints.collectAsState()
+    val areas by viewModel.areas.collectAsState()
+    val searchResult by viewModel.searchResult.collectAsState()
+
+    LaunchedEffect(selectedArea) {
+        selectedArea?.let { area ->
+            val areaPoints = viewModel.getAreaPolygonPoints(area)
+            if (areaPoints.isNotEmpty()) {
+                if (areaPoints.size == 1) {
+                    cameraPositionState.animate(
+                        update = CameraUpdateFactory.newLatLngZoom(areaPoints[0], 15f),
+                        durationMs = 1000
+                    )
+                } else {
+                    val boundsBuilder = LatLngBounds.Builder()
+                    areaPoints.forEach { point ->
+                        boundsBuilder.include(point)
+                    }
+                    val bounds = boundsBuilder.build()
+
+                    val padding = 100
+                    cameraPositionState.animate(
+                        update = CameraUpdateFactory.newLatLngBounds(bounds, padding),
+                        durationMs = 1000
+                    )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(searchResult) {
+        searchResult?.let { location ->
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newLatLngZoom(location, 15f),
+                durationMs = 1000
+            )
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            onMapClick = { latLng ->
+                if (isPolygonMode) {
+                    viewModel.addPolygonPoint(latLng)
+                } else {
+                    viewModel.selectLocation(latLng)
+                }
+            }
+        ) {
+
+            searchResult?.let { location ->
+                Marker(
+                    state = MarkerState(position = location),
+                    title = "Résultat de recherche"
+                )
+            }
+
+            if (!isPolygonMode) {
+                areas.forEach { area ->
+                    val areaPoints = viewModel.getAreaPolygonPoints(area)
+                    if (areaPoints.size >= 3) {
+                        val isSelected = selectedArea?.id == area.id
+                        Polygon(
+                            points = areaPoints,
+                            fillColor = if (isSelected) Color.Green.copy(alpha = 0.4f) else Color.Blue.copy(
+                                alpha = 0.2f
+                            ),
+                            strokeColor = if (isSelected) Color.Green else Color.Blue,
+                            strokeWidth = if (isSelected) 4f else 2f
+                        )
+                    }
+                }
+            }
+
+            if (isPolygonMode) {
+                polygonPoints.forEach { point ->
+                    Circle(
+                        center = point,
+                        radius = 50.0,
+                        fillColor = Color.White,
+                        strokeColor = Color.Red,
+                        strokeWidth = 4f
+                    )
+                }
+            }
+
+            if (isPolygonMode && polygonPoints.size >= 3) {
+                Polygon(
+                    points = polygonPoints,
+                    fillColor = Color.Blue.copy(alpha = 0.3f),
+                    strokeColor = Color.Blue,
+                    strokeWidth = 3f
+                )
+            }
+
+            if (isPolygonMode && polygonPoints.size >= 2) {
+                Polyline(
+                    points = polygonPoints,
+                    color = Color.Blue,
+                    width = 3f
+                )
+            }
+        }
+
+        ModeChip(
+            isCreationMode = isPolygonMode,
+            modifier = Modifier
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
+                .align(Alignment.TopCenter)
+        )
+
+        SearchTopBar(
+            searchQuery = searchQuery,
+            onSearchQueryChange = onSearchQueryChange,
+            onSearchClick = {
+                viewModel.searchPlace(searchQuery)
+            },
+            onClearClick = {
+                onSearchQueryChange("")
+                viewModel.clearSearchResult()
+            },
+            modifier = Modifier
+                .padding(
+                    start = 16.dp,
+                    top = if (isPolygonMode) 60.dp else 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                )
+                .align(Alignment.TopCenter)
+        )
+
+        InstructionToast(
+            message = "Tapez sur la carte pour créer des points de polygone. Tapez à nouveau sur un point pour le supprimer.",
+            isVisible = showInstructionToast,
+            onDismiss = onDismissToast,
+            modifier = Modifier
+                .padding(top = if (isPolygonMode) 120.dp else 80.dp)
+                .align(Alignment.TopCenter),
+            durationMs = 10000L
+        )
+    }
 }

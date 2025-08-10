@@ -27,12 +27,10 @@ fun InstructionToast(
     modifier: Modifier = Modifier,
     durationMs: Long = 5000L
 ) {
-    // Use a unique key that changes only when toast becomes visible
     val toastKey = remember(isVisible) {
         if (isVisible) System.currentTimeMillis() else 0L
     }
 
-    // Auto-dismiss after duration - only restart when toastKey changes
     LaunchedEffect(toastKey) {
         if (isVisible && toastKey > 0L) {
             delay(durationMs)

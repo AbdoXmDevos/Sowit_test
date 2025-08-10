@@ -1,6 +1,8 @@
 package ma.abdokarimi.sowittechtest.utils
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
@@ -11,8 +13,24 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-// Utility class for Google Places API search
-class PlacesSearchUtils(private val context: Context, private val apiKey: String) {
+class PlacesSearchUtils(private val context: Context) {
+
+    private val apiKey: String by lazy {
+        getApiKeyFromManifest()
+    }
+
+    private fun getApiKeyFromManifest(): String {
+        return try {
+            val appInfo: ApplicationInfo = context.packageManager.getApplicationInfo(
+                context.packageName,
+                PackageManager.GET_META_DATA
+            )
+            appInfo.metaData?.getString("com.google.android.geo.API_KEY") ?: ""
+        } catch (e: Exception) {
+            Log.e("PlacesSearchUtils", "Failed to get API key from manifest", e)
+            ""
+        }
+    }
     
     private val placesClient: PlacesClient by lazy {
         if (!Places.isInitialized()) {
