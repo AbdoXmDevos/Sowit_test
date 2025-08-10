@@ -1,4 +1,4 @@
-package ma.abdokarimi.sowittechtest.mvvm
+package ma.abdokarimi.sowittechtest.ui.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -17,47 +17,61 @@ import ma.abdokarimi.sowittechtest.utils.PlacesSearchUtils
 import ma.abdokarimi.sowittechtest.utils.SerializationUtils
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
-    // Initialize database
     private val db = Room.databaseBuilder(
         app,
         AppDatabase::class.java,
         "places-db"
     ).fallbackToDestructiveMigration().build()
 
-    // Initialize DAO
     private val areaDao = db.areaDao()
 
-    // Initialize utility classes
     private val placesSearchUtils = PlacesSearchUtils(
         app,
-        "AIzaSyA-njYF7cbffSFJ2199ZOL_nGZGP3tDHvc" // Your API key from manifest
+        "AIzaSyA-njYF7cbffSFJ2199ZOL_nGZGP3tDHvc"
     )
 
-    // UI state
     val areas = areaDao.getAllAreas()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // Selected location state
     private val _selectedLatLng = MutableStateFlow<LatLng?>(null)
     val selectedLatLng: StateFlow<LatLng?> = _selectedLatLng
 
-    // Polygon creation state
     private val _polygonPoints = MutableStateFlow<List<LatLng>>(emptyList())
     val polygonPoints: StateFlow<List<LatLng>> = _polygonPoints
 
-    // Polygon mode state
     private val _isPolygonMode = MutableStateFlow(false)
     val isPolygonMode: StateFlow<Boolean> = _isPolygonMode
 
-    // Selected area state
     private val _selectedArea = MutableStateFlow<Area?>(null)
     val selectedArea: StateFlow<Area?> = _selectedArea
 
-    // Search functionality
     private val _searchResult = MutableStateFlow<LatLng?>(null)
     val searchResult: StateFlow<LatLng?> = _searchResult
 
-    // UI actions
+    private val _showAreasList = MutableStateFlow(false)
+    val showAreasList: StateFlow<Boolean> = _showAreasList
+
+    private val _showSaveDialog = MutableStateFlow(false)
+    val showSaveDialog: StateFlow<Boolean> = _showSaveDialog
+
+    private val _showDeleteDialog = MutableStateFlow(false)
+    val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
+    private val _areaToDelete = MutableStateFlow<Area?>(null)
+    val areaToDelete: StateFlow<Area?> = _areaToDelete
+
+    private val _areaName = MutableStateFlow("")
+    val areaName: StateFlow<String> = _areaName
+
+    private val _showInstructionToast = MutableStateFlow(false)
+    val showInstructionToast: StateFlow<Boolean> = _showInstructionToast
+
+    private val _hasShownInstructionBefore = MutableStateFlow(false)
+    val hasShownInstructionBefore: StateFlow<Boolean> = _hasShownInstructionBefore
+
     fun selectLocation(latLng: LatLng) {
         _selectedLatLng.value = latLng
     }
@@ -65,7 +79,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun togglePolygonMode() {
         _isPolygonMode.value = !_isPolygonMode.value
         if (!_isPolygonMode.value) {
-            // Clear polygon points when exiting polygon mode
             _polygonPoints.value = emptyList()
         }
     }
@@ -73,14 +86,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun addPolygonPoint(latLng: LatLng) {
         val currentPoints = _polygonPoints.value.toMutableList()
 
-        // Check if point already exists (for deletion) using utility
         val existingPointIndex = LocationUtils.findNearPointIndex(currentPoints, latLng)
 
         if (existingPointIndex != -1) {
-            // Remove existing point
             currentPoints.removeAt(existingPointIndex)
         } else {
-            // Add new point
             currentPoints.add(latLng)
         }
 
@@ -90,8 +100,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun clearPolygonPoints() {
         _polygonPoints.value = emptyList()
     }
-
-
 
     fun saveArea(name: String) {
         val points = _polygonPoints.value
@@ -104,7 +112,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                         polygonPointsJson = pointsJson
                     )
                 )
-                // Clear polygon and exit polygon mode
                 _polygonPoints.value = emptyList()
                 _isPolygonMode.value = false
             }
@@ -126,7 +133,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteArea(area: Area) {
         viewModelScope.launch {
             areaDao.delete(area)
-            // Clear selected area if it was the one being deleted
             if (_selectedArea.value?.id == area.id) {
                 _selectedArea.value = null
             }
@@ -147,5 +153,37 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun clearSearchResult() {
         _searchResult.value = null
+    }
+
+    fun setShowAreasList(show: Boolean) {
+        _showAreasList.value = show
+    }
+
+    fun setShowSaveDialog(show: Boolean) {
+        _showSaveDialog.value = show
+    }
+
+    fun setShowDeleteDialog(show: Boolean) {
+        _showDeleteDialog.value = show
+    }
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
+    fun setAreaToDelete(area: Area?) {
+        _areaToDelete.value = area
+    }
+
+    fun setAreaName(name: String) {
+        _areaName.value = name
+    }
+
+    fun setShowInstructionToast(show: Boolean) {
+        _showInstructionToast.value = show
+    }
+
+    fun setHasShownInstructionBefore(hasShown: Boolean) {
+        _hasShownInstructionBefore.value = hasShown
     }
 }
