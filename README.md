@@ -189,7 +189,7 @@ dependencies {
 
 ## Author
 
-**Abderrahim Karimi**
+**Abdessamad Karimi**
 
 - 🌐 GitHub: [@AbdoXmDevos](https://github.com/AbdoXmDevos)
 - 📧 Email: abdssamadkarimi.ak@gmail.com
