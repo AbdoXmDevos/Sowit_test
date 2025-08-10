@@ -1,4 +1,4 @@
-package ma.abdokarimi.sowittechtest.ui.components
+package ma.abdokarimi.sowittechtest.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -19,6 +19,12 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.*
 import ma.abdokarimi.sowittechtest.R
 import ma.abdokarimi.sowittechtest.ui.viewmodels.MainViewModel
+import ma.abdokarimi.sowittechtest.ui.components.AreaListDropdown
+import ma.abdokarimi.sowittechtest.ui.components.DeleteAreaDialog
+import ma.abdokarimi.sowittechtest.ui.components.InstructionToast
+import ma.abdokarimi.sowittechtest.ui.components.ModeChip
+import ma.abdokarimi.sowittechtest.ui.components.SaveAreaDialog
+import ma.abdokarimi.sowittechtest.ui.components.SearchTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

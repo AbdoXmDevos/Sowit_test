@@ -7,7 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.material3.*
 
 import ma.abdokarimi.sowittechtest.ui.viewmodels.MainViewModel
-import ma.abdokarimi.sowittechtest.ui.components.MainScreen
+import ma.abdokarimi.sowittechtest.ui.screens.MainScreen
 
 class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<MainViewModel>()

@@ -158,8 +158,9 @@ dependencies {
 ├── MainActivity.kt                   # App entry point
 ├── SplashActivity.kt                # Welcome experience
 ├── ui/
+│   ├── screens/                     # App screens
+│   │   └── MainScreen.kt            # Main app interface
 │   ├── components/                  # Reusable UI components
-│   │   ├── MainScreen.kt            # Main app interface
 │   │   ├── SearchTopBar.kt          # Smart search bar
 │   │   ├── AreaListDropdown.kt      # Area management
 │   │   ├── SaveAreaDialog.kt        # Area creation
