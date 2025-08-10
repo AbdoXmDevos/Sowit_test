@@ -16,7 +16,7 @@
 
 ## What is this project?
 
-This project is a modern Android app that makes geographical area management intuitive and powerful. Whether you're planning routes, marking territories, or organizing locations, MapZone provides the tools you need with a beautiful, user-friendly interface.
+This project is a modern Android app that makes geographical area management intuitive and powerful. Whether you're planning routes, marking territories, or organizing locations, it provides the tools you need with a beautiful, user-friendly interface.
 
 ## Getting Started
 
@@ -49,8 +49,8 @@ Before you can run the project, you'll need to obtain a Google Maps API key:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/mapzone.git
-   cd sowit_test
+   git clone https://github.com/AbdoXmDevos/Sowit_test
+   cd Sowit_test
    ```
 
 2. **Add your Google Maps API key**
@@ -190,7 +190,7 @@ dependencies {
 
 ## Author
 
-**Abderrahim Karimi**
+**Abdessamad Karimi**
 
 - 🌐 GitHub: [@AbdoXmDevos](https://github.com/AbdoXmDevos)
 - 📧 Email: abdssamadkarimi.ak@gmail.com
